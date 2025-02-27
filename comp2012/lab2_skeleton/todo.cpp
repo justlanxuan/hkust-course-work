@@ -15,28 +15,31 @@ Student::Student(const char* name): classCount{0}, classCapacity{2}
 
 // Student destructor
 Student::~Student() {
-    for(int i = 0;i<classCount;i++)
+
+    for(int i = 0;i<classCapacity;i++)
     {
+        if(classes[i]!=nullptr){
         classes[i]->dropStudent(this);
+        }
     }
-    delete [] this->name;
     delete [] this->classes;
     cout<<"Student: "<<this->name<<" destroyed!"<<endl;
+    delete [] this->name;
 }
 
 // Class constructor
-Class::Class(const char* name, int capacity):studentCount{0} {
+Class::Class(const char* name, int capacity):studentCount{0},capacity{capacity} {
     this->name = new char[strlen(name)+1];
     strcpy(this->name,name);
-    this->students = new Student*[capacity];
+    this->students = new Student*[this->capacity];
     cout<<"Class: "<<this->name<<" created with capacity "<<this->capacity<<"."<<endl;
 }
 
 // Class destructor
 Class::~Class() {
+    cout<<"Class: "<<this->name<<" destroyed."<<endl;
     delete [] this->name;
     delete [] this->students;
-    cout<<"Class: "<<this->name<<" destroyed!"<<endl;
 }
 
 // Enroll a student in the class
@@ -51,7 +54,8 @@ bool Class::enrollStudent(Student* student) {
         students[studentCount] = student;
         studentCount+=1;
         student->enrollInClass(this);
-        cout<<"Student "<<student->getName()<<" dropped from class "<<this->name<<"."<<endl;
+        
+        cout<<"Student "<<student->getName()<<" enrolled in class "<<this->name<<"."<<endl;
         return true;
     }
 }
@@ -64,7 +68,7 @@ bool Class::dropStudent(Student* student) {
     for(int i=0;i<this->studentCount;i++){
         // can I just compare the address instead of compare names
         if(strcmp(student->getName(),this->students[i]->getName())==0){
-            bool student_found = true;
+            student_found = true;
             student_idx = i;
             break;
         }
