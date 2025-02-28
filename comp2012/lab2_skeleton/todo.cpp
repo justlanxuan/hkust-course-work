@@ -15,12 +15,8 @@ Student::Student(const char* name): classCount{0}, classCapacity{2}
 
 // Student destructor
 Student::~Student() {
-
-    for(int i = 0;i<classCapacity;i++)
-    {
-        if(classes[i]!=nullptr){
-        classes[i]->dropStudent(this);
-        }
+    while(this->classCount>0){
+        classes[0]->dropStudent(this);
     }
     delete [] this->classes;
     cout<<"Student: "<<this->name<<" destroyed!"<<endl;
@@ -79,11 +75,12 @@ bool Class::dropStudent(Student* student) {
     }
     else if(student_found){
         cout<<"Student "<<students[student_idx]->getName()<<" dropped from class "<<this->getName()<<"."<<endl;
-        this->students[student_idx]->dropClass(this);
+        (this->students[student_idx])->dropClass(this);
+        studentCount-=1;
         for(int j=student_idx;j<this->studentCount;j++){
             this->students[j]=this->students[j+1];
         }
-        studentCount-=1;
+        students[studentCount] = nullptr;
         this->students[studentCount]=nullptr;
         
 
