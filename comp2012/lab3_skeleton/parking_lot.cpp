@@ -3,7 +3,7 @@
 
 ParkingLot::ParkingLot(const string& name, int capacity):name(name),capacity(capacity) {
     // TODO 1: ParkingLot constructor
-    cout<<"[Creation] Parking Lot "<<this->name;
+    cout<<"[Creation] Parking Lot "<<this->name<<endl;
     this->num_of_spots = 0; // initialize to 0?
     this->spots = new ParkingSpot*[this->capacity]{};// initialize to nullptr
 }
@@ -13,13 +13,13 @@ ParkingLot::ParkingLot(const ParkingLot& lot) {
     this->name = lot.name;
     this->capacity = lot.capacity;
     this->num_of_spots = 0;
+    cout<<"[CopyCreation] Parking Lot "<<this->name<<endl;
     this->spots = new ParkingSpot*[this->capacity]{};//initialize members to nullptr
     for(int i=0;i<this->capacity;i++){// for all spots
         if(lot.spots[i]!=nullptr){// if there the spot is occupied
             ParkingLot::createSpot(lot.spots[i]->getSpotNumber(),lot.spots[i]->getVehicle());
         }
-    }
-    cout<<"[Creation] Parking Lot "<<this->name;
+    } 
 }
 
 ParkingLot::~ParkingLot() {
@@ -51,29 +51,19 @@ bool ParkingLot::addVehicle(Vehicle* vehicle, const string& spotNumber) {
     }
     // if vehicle is parked elsewhere
     for(int i=0;i<this->capacity;i++){
-        if(this->spots[i]!=nullptr){
-            if(this->spots[i]->getVehicle()==vehicle){
-                cout<<"Vehicle "<<vehicle->getLicensePlate()<<" is already parked in spot "<<spots[i]->getSpotNumber()<<endl;
-                return false;
-            }
+        if(this->spots[i]!=nullptr&& this->spots[i]->getVehicle() == vehicle){
+            cout<<"Vehicle "<<vehicle->getLicensePlate()<<" is already parked in spot "<<spots[i]->getSpotNumber()<<"."<<endl;
+            return false;
         }
     }
-    // if the parking spot is occupied
-    for(int i=0;i<this->capacity;i++){
-        if(this->spots[i]!=nullptr){
-            if(this->spots[i]->isOccupied()){
-                cout<<"Spot "<<spots[i]->getSpotNumber()<<" is already occupied."<<endl;
+    for (int i = 0; i < this->capacity; i++) {
+        if (this->spots[i] != nullptr && this->spots[i]->getSpotNumber() == spotNumber) {
+            if (this->spots[i]->isOccupied()) {
+                cout << "Spot " << spotNumber << " is already occupied." << endl;
                 return false;
             }
-        }
-    }
-    // if parking spot is found
-    for(int i=0;i<this->capacity;i++){
-        if(this->spots[i]!=nullptr){
-            if(this->spots[i]->getSpotNumber()==spotNumber){//found
-                this->spots[i]->parkVehicle(vehicle);
-                return true;
-            }
+            this->spots[i]->parkVehicle(vehicle);
+            return true;
         }
     }
     cout<<"Spot "<<spotNumber<<" not found in "<<this->name<<endl;
