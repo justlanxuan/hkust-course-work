@@ -8,16 +8,28 @@ User::User():userId(0),name(""),numBooksBorrowed(0),maxBooks(5),booksBorrowed(nu
 User::User(int id, const string &n, int borrow, int max): userId(id),name(n),numBooksBorrowed(borrow),maxBooks(max),booksBorrowed(nullptr)
 {
 }
-// Task 3.3:
+// Task 3.3: done! check memory leak
 User::~User()
 {
     for(int i=0;i<numBooksBorrowed;i++){
-        
+        delete booksBorrowed[i];
     }
+    delete [] booksBorrowed;
 }
-
+// Task 3.4: 
 void User::borrowBook(Book *book)
 {
+    if(this->numBooksBorrowed>=this->maxBooks){
+        cout<<"You cannot borrow more books."<<endl;
+        return;
+    }
+    else if(book == nullptr){
+        cout<<"This book is currently unavailable."<<endl;
+        return;
+    }
+    else{
+
+    }
 }
 
 void User::returnBook(Book *book)

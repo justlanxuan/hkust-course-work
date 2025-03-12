@@ -48,7 +48,7 @@ int Book::getInventoryCount() const
 // Task 1.5: done!
 void Book::changeInventoryCount(int c)
 {
-    this->inventoryCount = c;
+    this->inventoryCount +=c;
 }
 // Task 1.6: done!
 string Book::getTitle() const

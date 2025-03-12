@@ -55,25 +55,23 @@ BookList::BookList(const BookList &other)
     }
     else{
         this->head = new Node(other.head->data);
-        Node* this_list = head;
+        Node* this_list = this->head;
         Node* other_list = other.head->next;
         while(other_list != nullptr){
             this_list->next = new Node(other_list->data);
             other_list = other_list->next;
             this_list = this_list->next;
-    }
-    return;   
+    }  
     } 
 }
 // Task 2.3: done! check memory leak
 BookList::~BookList()
 {
     Node* current = this->head;
-    Node* next = this->head->next;
     while(current != nullptr){
-        next = current->next;
+        Node* temp_next = current->next;
         delete current;
-        current = next;
+        current = temp_next;
     }
 }
 // Task 2.4: done!
@@ -92,8 +90,8 @@ void BookList::insertBook(Book *book)
     // if book exist, increase inv
     Book* search_book = searchList(book->getId());
     if(search_book!=nullptr){
-        // return the pointer to the book
-        search_book->changeInventoryCount(search_book->getInventoryCount()+1);
+        search_book->changeInventoryCount(1);
+        return;
     }
     // if book does not exist, add an objext
     else{
@@ -107,32 +105,34 @@ void BookList::insertBook(Book *book)
             }
             current->next = new Node(book);
         }
-    }
-}
-// Task 2.6: done! case if book is not found? check memory leak
-void BookList::removeBook(Book *book)
-{
-    if(book->getInventoryCount()>1){
-        book->changeInventoryCount(book->getInventoryCount()-1);
-    }
-    
-    else if(book->getInventoryCount()<=0){
-        // book not found
         return;
     }
-    // remove the book from the BookList
+}
+// Task 2.6: done! check memory leak
+void BookList::removeBook(Book *book)
+{
+    // book not found
+    if(searchList(book->getId())==nullptr){
+        return;
+    }
     else{
-        Node* current = this->head;
-        Node* temp = nullptr;
-        while(current != nullptr){
-            // find the position of the book
-            if(current->data->getId()==book->getId()){
-                temp = current->next;
-                delete current;
-                current = temp;
-                break;
+        book->changeInventoryCount(-1);
+        int num_of_book = book->getInventoryCount();
+        if(num_of_book = 0){// remove the book
+            Node* current = this->head;
+            while(current != nullptr){
+                if(current->data->getId()==book->getId()){
+                    Node* temp_next = current->next;
+                    delete current;
+                    current = temp_next;
+                    break;
+                }
+                current = current->next;
             }
-            current = current->next;
+            
+        }
+        else{
+            return;
         }
     }
 }
