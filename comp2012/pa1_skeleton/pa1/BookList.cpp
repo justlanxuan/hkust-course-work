@@ -116,30 +116,31 @@ void BookList::removeBook(Book *book)
         return;
     }
     else{
-        book->changeInventoryCount(-1);
         int num_of_book = book->getInventoryCount();
-        if(num_of_book = 0){// remove the book
-            Node* current = this->head;
-            while(current != nullptr){
-                if(current->data->getId()==book->getId()){
-                    Node* temp_next = current->next;
-                    delete current;
-                    current = temp_next;
-                    break;
-                }
-                current = current->next;
-            }
-            
+        // if inventory count is 1
+        if(num_of_book >= 1){// remove the book
+            book->changeInventoryCount(-1);
         }
-        else{
-            return;
+        if(book->getInventoryCount()==0){
+            // remove the book
+            Node* current = this->head;
+            Node* next = current->next;
+            while(next != nullptr){
+                if(next->data->getId()==book->getId()){
+                    current->next = next->next;
+                    delete next;
+                    return;
+                }
+                current = next;
+                next = next->next;
+            } 
+        return;
         }
     }
 }
 // Task 2.7: done!
 void BookList::displayBooks() const
 {
-    cout<<"Library Book Details:"<<endl;
     if(this->isEmpty()){
         cout<<"The book list is empty."<<endl;
     }
@@ -151,31 +152,65 @@ void BookList::displayBooks() const
         }
     }    
 }
-// Task 2.8:
+// Task 2.8: maybe done? better sortings?
 void BookList::sortBooks(SortCriteria criteria)
 {
-    // sorted by rating: descending order
-    if(criteria == BY_RATING){
-
+    int length = 0;
+    Node* current = this->head;
+    while(current != nullptr){
+        length += 1;
+        current = current->next;
     }
-    // sorted by title
+    if (length == 0 || length == 1){ // no book or one book only, no need to sort
+        return;
+    }
+    else if(criteria == BY_RATING){
+        for(int i=0;i<length-1;i++){// iterate on every fixed position
+            Node* node1 = this->head;
+            Node* node2 = node1->next;
+            while(node2!=nullptr){
+                if(node1->data->getRating()<node2->data->getRating()){
+                    //swap node1 and node 2
+                    Book* temp = node1->data;
+                    node1->data = node2->data;
+                    node2->data = temp;
+                }
+                node1 = node2;
+                node2 = node2->next;
+            }
+    }
+    }
     else if(criteria == BY_TITLE){
-
+        for(int i=0;i<length-1;i++){// iterate on every fixed position
+            Node* node1 = this->head;
+            Node* node2 = node1->next;
+            while(node2!=nullptr){
+                if(node1->data->getTitle()>node2->data->getTitle()){
+                    //swap node1 and node 2
+                    Book* temp = node1->data;
+                    node1->data = node2->data;
+                    node2->data = temp;
+                }
+                node1 = node2;
+                node2 = node2->next;
+            }
+    }
+    }
+    else{
+        return;
     }
 }
 // Task 2.9: done!
 Book *BookList::searchList(int bookId) const
 {
-    Book* book = nullptr;
     Node* current = this->head;
     while(current != nullptr){
         if (bookId == current->data->getId()){
-            book = current->data;
-            break;
+            return current->data;
         }
         current = current->next;
     }
-    return book;
+    return nullptr;
 }
 // Task 2.10: done!
 int BookList::countBooks() const
@@ -186,22 +221,77 @@ int BookList::countBooks() const
         num_of_book += current->data->getInventoryCount();
         current = current->next;
     }
+    return num_of_book;
 }
 // Task 2.11: done!
 void BookList::rateBook(int bookId, double newRating)
 {
+    if(searchList(bookId) == nullptr){
+        cout<<"Book with ID "<<bookId<<" not found."<<endl;
+        return;
+    }
     searchList(bookId)->addRating(newRating);
+    cout<<"Rating updated for Book "<<bookId<<". New rating: "<<searchList(bookId)->getRating()<<endl;
 }
-// Task 2.12: 
+// Task 2.12: done!
 Book *BookList::getBookWithMaxRating() const
 {
-
+    // if the book list is empty
+    if(this->isEmpty()){
+        cout<<"The book list is empty."<<endl;
+        return nullptr;
+    }
+    else{
+        Book* max_rating_book = this->head->data;
+        Node* current = this->head;
+        while(current != nullptr){
+            // compare
+            if(current->data->getRating()>max_rating_book->getRating()){
+                max_rating_book = current->data;
+            }
+            current = current->next;
+        }
+        return max_rating_book;
+    }
 }
-
+// Task 2.13: done!
 Book *BookList::getBookWithMinRating() const
 {
+    // if the book list is empty
+    if(this->isEmpty()){
+        cout<<"The book list is empty."<<endl;
+        return nullptr;
+    }
+    else{
+        Book* min_rating_book = this->head->data;
+        Node* current = this->head;
+        while(current != nullptr){
+            // compare
+            if(current->data->getRating()<min_rating_book->getRating()){
+                min_rating_book = current->data;
+            }
+            current = current->next;
+        }
+        return min_rating_book;
+    }
 }
-
+// Task 2.14: reverse the list or output as ascending order?
 void BookList::reverseBooksByRating()
 {
+    if(this->head == nullptr){
+        return;
+    }
+    this->sortBooks(BY_RATING); // in descending order
+    // reverse the linked list
+    Node* current = this->head;
+    Node* next = this->head->next;
+    while(next != nullptr){
+        Node* temp_next_next = next->next;
+        next->next = current;
+        current = next;
+        next = temp_next_next;        
+    }
+    this->head->next = nullptr;
+    this->head = current;
+    return;
 }
